@@ -23,13 +23,11 @@ spec:
       command:
         - cat
       tty: true
-      workingDir: /home/jenkins/agent/workspace
+      workingDir: /workspace
       volumeMounts:
         - name: workspace
-          mountPath: /home/jenkins/agent
+          mountPath: /workspace
 
   volumes:
     - name: workspace
-      hostPath:
-        path: /home/gaotao/jenkins-workspace
-        type: DirectoryOrCreate
+      emptyDir: {}
