@@ -23,10 +23,10 @@ spec:
       command:
         - cat
       tty: true
-      workingDir: /workspace
+      workingDir: /home/jenkins/agent/workspace
       volumeMounts:
         - name: workspace
-          mountPath: /workspace
+          mountPath: /home/jenkins/agent
 
   volumes:
     - name: workspace
