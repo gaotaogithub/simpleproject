@@ -27,7 +27,7 @@ pipeline {
                   whoami
                   go version
                   go mod tidy
-                  go build -o app
+                  go build -buildvcs=false -o app
                   ls -lah
                 '''
             }
