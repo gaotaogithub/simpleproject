@@ -1,0 +1,29 @@
+pipeline {
+    agent {
+        kubernetes {
+            cloud 'k3s'
+            namespace 'jenkins'
+            serviceAccount 'jenkins'
+            yamlFile 'deploy/beagleCiPod.yaml'
+            defaultContainer 'go'
+        }
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                  go version
+                  go mod tidy
+                  go build -o app
+                '''
+            }
+        }
+    }
+}
