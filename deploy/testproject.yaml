@@ -30,4 +30,6 @@ spec:
 
   volumes:
     - name: workspace
-      emptyDir: {}
+      hostPath:
+        path: /home/gaotao/jenkins-workspace
+        type: DirectoryOrCreate
