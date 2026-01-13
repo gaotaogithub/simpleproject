@@ -8,15 +8,22 @@ spec:
   restartPolicy: Never
 
   containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:latest
+      args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
+      env:
+        - name: JENKINS_URL
+          value: http://jenkins.jenkins.svc.cluster.local:8080
+      volumeMounts:
+        - name: workspace
+          mountPath: /home/jenkins/agent
+
     - name: go
       image: golang:1.22
-      imagePullPolicy: IfNotPresent
       command:
         - cat
       tty: true
-
       workingDir: /workspace
-
       volumeMounts:
         - name: workspace
           mountPath: /workspace

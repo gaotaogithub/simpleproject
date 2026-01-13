@@ -8,20 +8,27 @@ pipeline {
             defaultContainer 'go'
         }
     }
+    options {
+        timestamps()
+        }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+                sh 'echo "Checked out to: $(pwd)" && ls -lah'
             }
         }
 
         stage('Build') {
             steps {
                 sh '''
+                  echo "Workdir: $(pwd)"
+                  whoami
                   go version
                   go mod tidy
                   go build -o app
+                  ls -lah
                 '''
             }
         }
