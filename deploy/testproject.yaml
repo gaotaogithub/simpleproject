@@ -13,7 +13,7 @@ spec:
       args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
       env:
         - name: JENKINS_URL
-          value: http://jenkins.jenkins.svc.cluster.local:8080
+          value: http://192.168.100.50:8080
       volumeMounts:
         - name: workspace
           mountPath: /home/jenkins/agent
