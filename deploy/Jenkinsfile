@@ -4,7 +4,7 @@ pipeline {
             cloud 'k3s'
             namespace 'jenkins'
             serviceAccount 'jenkins'
-            yamlFile 'deploy/beagleCiPod.yaml'
+            yamlFile 'deploy/testproject.yaml'
             defaultContainer 'go'
         }
     }
