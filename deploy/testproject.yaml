@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins-agent
+spec:
+  serviceAccountName: jenkins
+  restartPolicy: Never
+
+  containers:
+    - name: go
+      image: golang:1.22
+      imagePullPolicy: IfNotPresent
+      command:
+        - cat
+      tty: true
+
+      workingDir: /workspace
+
+      volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+
+  volumes:
+    - name: workspace
+      emptyDir: {}
