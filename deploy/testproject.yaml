@@ -23,6 +23,8 @@ spec:
           mountPath: /home/jenkins/agent
         - name: dockersock
           mountPath: /var/run/docker.sock
+        - name: dockerbin
+          mountPath: /usr/bin/docker
 
     - name: go
       image: golang:1.24.4
@@ -36,7 +38,9 @@ spec:
   volumes:
     - name: workspace
       emptyDir: {}
-    # --- 宿主机挂载定义 ---
     - name: dockersock
       hostPath:
         path: /var/run/docker.sock
+    - name: dockerbin 
+      hostPath: 
+        path: /usr/bin/docker 
