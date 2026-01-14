@@ -5,6 +5,8 @@ metadata:
     app: jenkins-agent
 spec:
   serviceAccountName: jenkins
+  securityContext:    # <--- 添加这部分
+  runAsUser: 0
   restartPolicy: Never
   containers:
     - name: jnlp
