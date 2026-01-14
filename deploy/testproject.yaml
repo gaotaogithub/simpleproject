@@ -24,8 +24,7 @@ spec:
       volumeMounts:
         - name: workspace
           mountPath: /home/jenkins/agent
-        - name: dockersock
-          mountPath: /var/run/docker.sock
+
     - name: kaniko
       image: gcr.io/kaniko-project/executor:latest
       command:
@@ -40,9 +39,6 @@ spec:
   volumes:
     - name: workspace
       emptyDir: {}
-    - name: dockersock
-      hostPath:
-        path: /var/run/docker.sock
     - name: docker-config
       secret:
         secretName: harbor-auth
