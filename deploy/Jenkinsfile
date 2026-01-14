@@ -27,18 +27,22 @@ pipeline {
 
         stage('init ') {
             steps{
-            string date = new Date().format('yyyy-MM-dd-HH-mm-ss')  // 当前时间戳
-            string commitID = sh(returnStdout: true, script: "echo -n ${GIT_COMMIT} | awk '{print substr(\$0,0,8)}'").trim()  // 截取commit前8位
-            string imageTag = BRANCH_NAME + "_" + "_" + date + "_" + commitID  // 组合镜像标签
-            env.IMAGE_TAG = imageTag
-            env.FULL_IMAGE_NAME = "${env.HARBOR_REPO}:${imageTag}"
-            string GO_VERSION = env.GO_VERSION
-            echo "------------------------------------------------"
-            echo "项目名称: ${env.PROJECT_NAME}"
-            echo "镜像标签: ${env.IMAGE_TAG}"
-            echo "完整镜像: ${env.FULL_IMAGE_NAME}"
-            echo "------------------------------------------------"
+                script{
+                    def date = new Date().format('yyyy-MM-dd-HH-mm-ss')  // 当前时间戳
+                    def commitID = sh(returnStdout: true, script: "echo -n ${GIT_COMMIT} | awk '{print substr(\$0,0,8)}'").trim()  // 截取commit前8位
+                    def imageTag = BRANCH_NAME + "_" + "_" + date + "_" + commitID  // 组合镜像标签
+                    env.IMAGE_TAG = imageTag
+                    env.FULL_IMAGE_NAME = "${env.HARBOR_REPO}:${imageTag}"
+                    string GO_VERSION = env.GO_VERSION
+                    echo "------------------------------------------------"
+                    echo "项目名称: ${env.PROJECT_NAME}"
+                    echo "镜像标签: ${env.IMAGE_TAG}"
+                    echo "完整镜像: ${env.FULL_IMAGE_NAME}"
+                    echo "------------------------------------------------"
+                    }
             }
+
+           
             
         }
 
@@ -53,22 +57,24 @@ pipeline {
 
          stage('build images') {
                     steps {
-                        container('kaniko') {
-                            echo "Starting Kaniko Build..."
-                            sh '''
-                            cat /kaniko/.docker/config.json
-                            /kaniko/executor \
-                            --dockerfile=deploy/Dockerfile \
-                            --context=$WORKSPACE \
-                            --destination=${env.FULL_IMAGE_NAME} \
-                            --insecure \
-                            --skip-tls-verify \
-                            --ignore-path=/sys \
-                            --ignore-path=/proc \
-                            --ignore-path=/dev  \
-                            --ignore-path=/product_uuid
-                            '''
-                            }
+                        script {
+                            container('kaniko') {
+                                echo "Starting Kaniko Build..."
+                                sh '''
+                                cat /kaniko/.docker/config.json
+                                /kaniko/executor \
+                                --dockerfile=deploy/Dockerfile \
+                                --context=$WORKSPACE \
+                                --destination=${env.FULL_IMAGE_NAME} \
+                                --insecure \
+                                --skip-tls-verify \
+                                --ignore-path=/sys \
+                                --ignore-path=/proc \
+                                --ignore-path=/dev  \
+                                --ignore-path=/product_uuid
+                                '''
+                                }
+                        }
                     }
                 }
 
