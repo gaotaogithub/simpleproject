@@ -1,3 +1,6 @@
+@Library('gtops-sdk@main') _
+
+
 def BRANCH_NAME = 'simpleproject'
 
 
@@ -42,17 +45,23 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh '''
-                  echo "Workdir: $(pwd)"
-                  whoami
-                  go version
-                  go mod tidy
-                  go build -buildvcs=false -o app
-                  ls -lah
-                '''
-            }
-        }
+         stage('build images') {
+                    steps {
+                        container ('jnlp') {
+                            script {
+                                echo "Build ${imageName} image"
+                                sh """
+                                docker build --build-arg GO_VERSION=${GO_VERSION} -f deploy/Dockerfile -t ${imageName}:${imageTag} .
+                                docker tag ${imageName}:${imageTag} ${latestImageRepo}
+                                """
+                                def acrCredentialId = 'gtHarbor'
+                                def acrRegistry = "gtharbor.legoutech.cn"
+                                def project = "simpleproject"
+                                imagePushUtils.image2Acr(acrCredentialId,imageRepo,acrRegistry,project)
+                                imagePushUtils.image2Acr(acrCredentialId,latestImageRepo,acrRegistry,project)
+                            }
+                        }
+                    }
+                }
     }
 }
