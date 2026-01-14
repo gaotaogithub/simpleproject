@@ -37,15 +37,10 @@ spec:
         mountPath: /home/jenkins/agent
       - name: kaniko-secret
         mountPath: /kaniko/.docker
-      - name: docker-config
-        mountPath: /kaniko/.docker
         
   volumes:
     - name: workspace
       emptyDir: {}
-    - name: docker-config
-      secret:
-        secretName: harbor-auth
     - name: kaniko-secret
       secret:
         secretName: harbor-auth
