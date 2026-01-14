@@ -15,8 +15,8 @@ pipeline {
     }
     environment {
         GO_VERSION = '1.24.4'  // go版本
-        PROJECT_NAME = 'simpleproject'
-        HARBOR_REPO = 'gtharbor.legoutech.cn/simpleproject'
+        PROJECT_NAME = 'library'
+        HARBOR_REPO = 'gtharbor.legoutech.cn/library'
     }
 
     options {
