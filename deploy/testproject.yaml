@@ -33,8 +33,6 @@ spec:
         - tail -f /dev/null
       tty: true
       volumeMounts:
-      - name: workspace
-        mountPath: /home/jenkins/agent
       - name: kaniko-secret
         mountPath: /kaniko/.docker
       - name: kaniko-context
