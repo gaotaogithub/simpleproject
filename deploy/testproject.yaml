@@ -27,13 +27,19 @@ spec:
 
     - name: kaniko
       image: gcr.io/kaniko-project/executor:latest
+      args:
+        - --dockerfile=deploy/Dockerfile
+        - --context=/home/jenkins/agent
+        - --destination=gtharbor.legoutech.cn/library/simpleproject:${BUILD_NUMBER}
+        - --insecure
+        - --skip-tls-verify
       tty: true
       volumeMounts:
-        - name: workspace
-          mountPath: /home/jenkins/agent
-        - name: docker-config
-          mountPath: /kaniko/.docker
-          
+      - name: workspace
+        mountPath: /home/jenkins/agent
+      - name: docker-config
+        mountPath: /kaniko/.docker
+        
   volumes:
     - name: workspace
       emptyDir: {}
