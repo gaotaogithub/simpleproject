@@ -37,9 +37,13 @@ spec:
         mountPath: /home/jenkins/agent
       - name: kaniko-secret
         mountPath: /kaniko/.docker
+      - name: kaniko-context
+        mountPath: /kaniko-context
         
   volumes:
     - name: workspace
+      emptyDir: {}
+    - name: kaniko-context
       emptyDir: {}
     - name: kaniko-secret
       secret:

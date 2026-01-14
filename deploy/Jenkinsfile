@@ -44,6 +44,18 @@ pipeline {
             }
         }
 
+        stage('Prepare Kaniko Context') {
+            steps {
+                container('jnlp') {
+                    // 创建 Kaniko 临时 context
+                    sh 'mkdir -p /kaniko-context'
+
+                    // 把 Jenkins workspace 复制到 Kaniko context
+                    sh 'cp -r /home/jenkins/agent/* /kaniko-context/'
+                }
+            }
+        }
+
          stage('build images') {
                     steps {
                         container('kaniko') {
