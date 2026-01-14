@@ -15,8 +15,14 @@ pipeline {
     }
     environment {
         GO_VERSION = '1.24.4'  // go版本
-        PROJECT_NAME = 'library'
-        HARBOR_REPO = 'gtharbor.legoutech.cn/library'
+         HARBOR_PROJECT = 'library'
+        // 具体的应用名称（镜像名）
+        APP_NAME = 'simpleproject'
+        
+        // ✅ 这里的格式必须是：域名/项目/应用名
+        HARBOR_REPO = "gtharbor.legoutech.cn/${HARBOR_PROJECT}/${APP_NAME}"
+        
+        BRANCH_NAME = 'simpleproject'
     }
 
     options {
