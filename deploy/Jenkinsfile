@@ -51,6 +51,7 @@ pipeline {
                             script {
                                 echo "Build ${imageName} image"
                                 sh """
+                                apt-get update && apt-get install -y docker.io
                                 docker build --build-arg GO_VERSION=${GO_VERSION} -f deploy/Dockerfile -t ${imageName}:${imageTag} .
                                 docker tag ${imageName}:${imageTag} ${latestImageRepo}
                                 """
