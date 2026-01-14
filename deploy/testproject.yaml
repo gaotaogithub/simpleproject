@@ -13,7 +13,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: jnlp
-      image: gtharbor.legoutech.cn/library/jnlp-agent:v3
+      image: gtharbor.legoutech.cn/library/jnlpwithkubectl:v1
       imagePullPolicy: Always
       args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
       env:
