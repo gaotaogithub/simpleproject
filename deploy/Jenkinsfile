@@ -55,28 +55,30 @@ pipeline {
 
         
 
-         stage('build images') {
-                    steps {
+        stage('Build & Push') {
+                steps {
+                    container('kaniko') {
                         script {
-                            container('kaniko') {
-                                echo "Starting Kaniko Build..."
-                                sh '''
-                                cat /kaniko/.docker/config.json
-                                /kaniko/executor \
-                                --dockerfile=deploy/Dockerfile \
-                                --context=$WORKSPACE \
-                                --destination=${env.FULL_IMAGE_NAME} \
-                                --insecure \
-                                --skip-tls-verify \
-                                --ignore-path=/sys \
-                                --ignore-path=/proc \
-                                --ignore-path=/dev  \
-                                --ignore-path=/product_uuid
-                                '''
-                                }
+                            echo "Starting Kaniko Build..."
+                            echo "Target: ${env.FULL_IMAGE_NAME}"
+                            
+                            // 【修复点 3】使用 env.FULL_IMAGE_NAME
+                            sh """
+                            /kaniko/executor \
+                            --dockerfile=deploy/Dockerfile \
+                            --context=\$WORKSPACE \
+                            --destination=${env.FULL_IMAGE_NAME} \
+                            --insecure \
+                            --skip-tls-verify \
+                            --ignore-path=/sys \
+                            --ignore-path=/proc \
+                            --ignore-path=/dev \
+                            --ignore-path=/product_uuid
+                            """
                         }
                     }
                 }
+            }
 
         stage('publish'){
             steps {
