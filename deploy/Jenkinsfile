@@ -47,6 +47,7 @@ pipeline {
          stage('build images') {
                     steps {
                         container('kaniko') {
+                            echo "Starting Kaniko Build..."
                             sh '''
                             /kaniko/executor \
                             --dockerfile=deploy/Dockerfile \
