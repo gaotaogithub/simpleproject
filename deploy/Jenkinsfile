@@ -15,6 +15,7 @@ pipeline {
     stages {
 
         stage('init ') {
+            steps{
             string date = new Date().format('yyyy-MM-dd-HH-mm-ss')  // 当前时间戳
             string commitID = sh(returnStdout: true, script: "echo -n ${GIT_COMMIT} | awk '{print substr(\$0,0,8)}'").trim()  // 截取commit前8位
             string imageName = sh(returnStdout: true, script: ''' echo -n $(basename $GIT_URL .git) | sed 's/.*\\///' ''')  // 从Git URL提取项目名，basename 提取最后一段文件名 后边的.git 用于去掉指定的后缀
@@ -23,7 +24,10 @@ pipeline {
             string latestImageRepo = "${imageName}_${BRANCH_NAME}:latest"  // latest标签镜像
             string GO_VERSION = env.GO_VERSION
             println "imageTag: ${imageTag} \n imageName: ${imageName}"
+            }
+            
         }
+
         stage('Checkout') {
             steps {
                 checkout scm
