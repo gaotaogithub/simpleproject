@@ -1,5 +1,5 @@
 # ---------- build stage ----------
-ARG GO_VERSION=1.24.2
+ARG GO_VERSION=1.24.4
 FROM golang:${GO_VERSION}-alpine AS builder
 
 ENV CGO_ENABLED=0 \
@@ -8,7 +8,7 @@ ENV CGO_ENABLED=0 \
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY go.mod  ./
 RUN go mod download
 
 COPY . .
