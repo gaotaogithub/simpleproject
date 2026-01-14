@@ -13,7 +13,7 @@ spec:
   restartPolicy: Never
   containers:
     - name: jnlp
-      image: gtharbor.legoutech.cn/library/jnlp-agent:v1
+      image: gtharbor.legoutech.cn/library/jnlp-agent:v3
       imagePullPolicy: Always
       args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
       env:
@@ -24,6 +24,8 @@ spec:
       volumeMounts:
         - name: workspace
           mountPath: /home/jenkins/agent
+        - name: dockersock
+          mountPath: /var/run/docker.sock
     - name: go
       image: golang:1.24.4
       command: ['cat']
@@ -31,7 +33,20 @@ spec:
       volumeMounts:
         - name: workspace
           mountPath: /home/jenkins/agent # 路径必须与 jnlp 一致
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:latest
+      command:
+        - cat
+      tty: true
+      volumeMounts:
+        - name: workspace
+          mountPath: /home/jenkins/agent
+        - name: docker-config
+          mountPath: /kaniko/.docker
           
   volumes:
     - name: workspace
       emptyDir: {}
+    - name: dockersock
+      hostPath:
+        path: /var/run/docker.sock

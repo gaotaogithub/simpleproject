@@ -47,20 +47,16 @@ pipeline {
 
          stage('build images') {
                     steps {
-                        container ('jnlp') {
-                            script {
-                                echo "Build ${imageName} image"
-                                sh """
-                                docker build --build-arg GO_VERSION=${GO_VERSION} -f deploy/Dockerfile -t ${imageName}:${imageTag} .
-                                docker tag ${imageName}:${imageTag} ${latestImageRepo}
-                                """
-                                def acrCredentialId = 'gtHarbor'
-                                def acrRegistry = "gtharbor.legoutech.cn"
-                                def project = "simpleproject"
-                                imagePushUtils.image2Acr(acrCredentialId,imageRepo,acrRegistry,project)
-                                imagePushUtils.image2Acr(acrCredentialId,latestImageRepo,acrRegistry,project)
+                        container('kaniko') {
+                            sh '''
+                            /kaniko/executor \
+                            --dockerfile=deploy/Dockerfile \
+                            --context=$WORKSPACE \
+                            --destination=gtharbor.legoutech.cn/library/simpleproject:${BUILD_NUMBER} \
+                            --insecure \
+                            --skip-tls-verify
+                            '''
                             }
-                        }
                     }
                 }
     }
