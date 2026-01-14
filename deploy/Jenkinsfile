@@ -15,6 +15,8 @@ pipeline {
     }
     environment {
         GO_VERSION = '1.24.4'  // go版本
+        PROJECT_NAME = 'simpleproject'
+        HARBOR_REPO = 'gtharbor.legoutech.cn/simpleproject'
     }
 
     options {
@@ -25,14 +27,18 @@ pipeline {
 
         stage('init ') {
             steps{
-            string date = new Date().format('yyyy-MM-dd-HH-mm-ss')  // 当前时间戳
-            string commitID = sh(returnStdout: true, script: "echo -n ${GIT_COMMIT} | awk '{print substr(\$0,0,8)}'").trim()  // 截取commit前8位
+            def date = new Date().format('yyyy-MM-dd-HH-mm-ss')  // 当前时间戳
+            def commitID = sh(returnStdout: true, script: "echo -n ${GIT_COMMIT} | awk '{print substr(\$0,0,8)}'").trim()  // 截取commit前8位
             string imageName = sh(returnStdout: true, script: ''' echo -n $(basename $GIT_URL .git) | sed 's/.*\\///' ''')  // 从Git URL提取项目名，basename 提取最后一段文件名 后边的.git 用于去掉指定的后缀
-            string imageTag = BRANCH_NAME + "_" + "_" + date + "_" + commitID  // 组合镜像标签
-            string imageRepo = "${imageName}:${imageTag}"  // 完整镜像仓库地址
-            string latestImageRepo = "${imageName}_${BRANCH_NAME}:latest"  // latest标签镜像
+            def imageTag = BRANCH_NAME + "_" + "_" + date + "_" + commitID  // 组合镜像标签
+            env.IMAGE_TAG = imageTag
+            env.FULL_IMAGE_NAME = "${env.HARBOR_REPO}:${imageTag}"
             string GO_VERSION = env.GO_VERSION
-            println "imageTag: ${imageTag} \n imageName: ${imageName}"
+            echo "------------------------------------------------"
+            echo "项目名称: ${env.PROJECT_NAME}"
+            echo "镜像标签: ${env.IMAGE_TAG}"
+            echo "完整镜像: ${env.FULL_IMAGE_NAME}"
+            echo "------------------------------------------------"
             }
             
         }
@@ -55,7 +61,7 @@ pipeline {
                             /kaniko/executor \
                             --dockerfile=deploy/Dockerfile \
                             --context=$WORKSPACE \
-                            --destination=gtharbor.legoutech.cn/library/simpleproject:${BUILD_NUMBER} \
+                            --destination=${env.FULL_IMAGE_NAME} \
                             --insecure \
                             --skip-tls-verify \
                             --ignore-path=/sys \
@@ -66,5 +72,32 @@ pipeline {
                             }
                     }
                 }
+
+        stage('publish'){
+            steps {
+                container('jnlp') {
+                    script {
+                        echo "Deploying to Kubernetes..."
+                        echo "Image: ${env.FULL_IMAGE_NAME}"
+                        
+                        // 使用 sed 替换 YAML 中的 $FULL_IMAGE_NAME 为实际镜像地址
+                        // 然后通过 kubectl apply 应用到集群
+                        sh """
+                        sed 's#\$FULL_IMAGE_NAME#${env.FULL_IMAGE_NAME}#g' deploy/k8s-deploy.yaml | kubectl apply -f -
+                        """
+                        
+                        // 强制重启一下 Pod 以确保拉取最新镜像（如果 tag 没变的话）
+                        sh "kubectl rollout restart deployment/simpleproject -n default"
+                        
+                        // 等待部署成功
+                        sh "kubectl rollout status deployment/simpleproject -n default"
+                    }
+                }
+            }
+
+
+        }
+
+
     }
 }
