@@ -44,17 +44,7 @@ pipeline {
             }
         }
 
-        stage('Prepare Kaniko Context') {
-            steps {
-                container('jnlp') {
-                    // 创建 Kaniko 临时 context
-                    sh 'mkdir -p /kaniko-context'
-
-                    // 把 Jenkins workspace 复制到 Kaniko context
-                    sh 'cp -r /home/jenkins/agent/* /kaniko-context/'
-                }
-            }
-        }
+        
 
          stage('build images') {
                     steps {
@@ -67,7 +57,10 @@ pipeline {
                             --context=$WORKSPACE \
                             --destination=gtharbor.legoutech.cn/library/simpleproject:${BUILD_NUMBER} \
                             --insecure \
-                            --skip-tls-verify
+                            --skip-tls-verify \
+                            --ignore-path=/sys \
+                            --ignore-path=/proc \
+                            --ignore-path=/dev
                             '''
                             }
                     }
