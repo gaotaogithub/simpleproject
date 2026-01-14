@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: simpleproject
-  namespace: default
+  namespace: jenkins
 spec:
   replicas: 1
   selector:
@@ -31,7 +31,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: simpleproject-svc
-  namespace: default
+  namespace: jenkins
 spec:
   type: NodePort  # 关键类型：允许通过节点端口访问
   selector:
