@@ -6,7 +6,6 @@ metadata:
 spec:
   serviceAccountName: jenkins
   restartPolicy: Never
-
   containers:
     - name: jnlp
       image: jenkins/inbound-agent:latest
@@ -17,17 +16,33 @@ spec:
       volumeMounts:
         - name: workspace
           mountPath: /home/jenkins/agent
-
+    
+    # --- 新增/修改的部分开始 ---
+    - name: docker  # 专门用来执行 docker 命令的容器
+      image: docker:latest # 这个镜像里包含了 docker 命令行工具
+      command:
+        - cat
+      tty: true
+      volumeMounts:
+        - name: workspace
+          mountPath: /home/jenkins/agent # 确保路径一致，这样能访问到代码
+        - name: dockersock # 挂载点
+          mountPath: /var/run/docker.sock
+    # --- 新增/修改的部分结束 ---
+    
     - name: go
       image: golang:1.24.4
       command:
         - cat
       tty: true
-      workingDir: /workspace
+      workingDir: /home/jenkins/agent # 建议统一工作目录
       volumeMounts:
         - name: workspace
-          mountPath: /workspace
-
+          mountPath: /home/jenkins/agent
   volumes:
     - name: workspace
       emptyDir: {}
+    # --- 宿主机挂载定义 ---
+    - name: dockersock
+      hostPath:
+        path: /var/run/docker.sock
