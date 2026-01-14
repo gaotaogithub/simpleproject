@@ -24,6 +24,14 @@ spec:
       volumeMounts:
         - name: workspace
           mountPath: /home/jenkins/agent
+    - name: go
+      image: golang:1.24.4
+      command: ['cat']
+      tty: true
+      volumeMounts:
+        - name: workspace
+          mountPath: /home/jenkins/agent # 路径必须与 jnlp 一致
+          
   volumes:
     - name: workspace
       emptyDir: {}
