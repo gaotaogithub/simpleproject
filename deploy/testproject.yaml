@@ -35,6 +35,8 @@ spec:
       volumeMounts:
       - name: workspace
         mountPath: /home/jenkins/agent
+      - name: kaniko-secret
+        mountPath: /kaniko/.docker
       - name: docker-config
         mountPath: /kaniko/.docker
         
@@ -44,3 +46,9 @@ spec:
     - name: docker-config
       secret:
         secretName: harbor-auth
+    - name: kaniko-secret
+      secret:
+        secretName: harbor-auth
+        items:
+          - key: .dockerconfigjson  # 注意：K8s 创建的 secret 键名通常是这个
+            path: config.json

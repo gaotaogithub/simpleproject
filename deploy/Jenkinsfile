@@ -49,6 +49,7 @@ pipeline {
                         container('kaniko') {
                             echo "Starting Kaniko Build..."
                             sh '''
+                            cat /kaniko/.docker/config.json
                             /kaniko/executor \
                             --dockerfile=deploy/Dockerfile \
                             --context=$WORKSPACE \
