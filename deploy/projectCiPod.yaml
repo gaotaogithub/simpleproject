@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins-agent
+spec:
+  serviceAccountName: jenkins
+  imagePullSecrets:
+    - name: harbor-auth
+  securityContext:
+    runAsUser: 0       # Pod 级 root
+    fsGroup: 0
+  restartPolicy: Never
+  containers:
+    - name: jnlp
+      image: gtharbor.legoutech.cn/library/jnlpwithkubectl:v1
+      imagePullPolicy: Always
+      args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
+      env:
+        - name: JENKINS_URL
+          value: http://192.168.100.50:8080
+      securityContext:
+        runAsUser: 0  
+      volumeMounts:
+        - name: workspace
+          mountPath: /home/jenkins/agent
+
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command:
+        - /busybox/sh
+        - -c
+        - tail -f /dev/null
+      tty: true
+      volumeMounts:
+      - name: workspace
+        mountPath: /home/jenkins/agent
+      - name: kaniko-secret
+        mountPath: /kaniko/.docker
+        
+  volumes:
+    - name: workspace
+      emptyDir: {}
+    - name: kaniko-secret
+      secret:
+        secretName: harbor-auth
+        items:
+          - key: .dockerconfigjson  # 注意：K8s 创建的 secret 键名通常是这个
+            path: config.json
