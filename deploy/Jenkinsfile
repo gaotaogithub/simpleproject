@@ -100,10 +100,10 @@ pipeline {
                         """
                         
                         // 强制重启一下 Pod 以确保拉取最新镜像（如果 tag 没变的话）
-                        sh "kubectl rollout restart deployment/simpleproject -n default"
+                        sh "kubectl rollout restart deployment/simpleproject -n jennkins"
                         
                         // 等待部署成功
-                        sh "kubectl rollout status deployment/simpleproject -n default"
+                        sh "kubectl rollout status deployment/simpleproject -n jennkins"
                     }
                 }
             }
